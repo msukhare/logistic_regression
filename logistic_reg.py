@@ -6,7 +6,7 @@
 #    By: msukhare <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/06/04 09:03:39 by msukhare          #+#    #+#              #
-#    Updated: 2018/06/14 17:40:07 by msukhare         ###   ########.fr        #
+#    Updated: 2018/10/17 16:00:37 by msukhare         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,51 +65,43 @@ def hypo(tab, i, thetas):
 
 def cost_fct(thetas, X, Y, col, row):
     result = 0
-    i = 0
-    while (i < row):
+    for i in range(int(row)):
         if (Y[i] == 1):
-            result += -np.log(hypo(X, i, thetas))
+            result += np.log(hypo(X, i, thetas))
         else:
-            result += -np.log((1 - hypo(X, i, thetas)))
-        i += 1
+            result += np.log((1 - hypo(X, i, thetas)))
     return (-(1 / row) * result)
 
 def get_somme(X, Y, row, thetas, j):
     result = 0
-    i = 0
-    while (i < row):
+    for i in range(row):
         result += (hypo(X, i, thetas) - Y[i][0]) * X[i][j]
-        i += 1
     return (result);
 
 def gradient_descent(thetas, tmp, X, Y, row, col):
-    j = 0
     alpha = 0.03
-    while (j < col):
+    for j in range(int(col)):
         tmp[j][0] = thetas[j][0] - ((alpha / row) * get_somme(X, Y, row, thetas, j))
-        j += 1
-    j = 0
-    while (j < col):
+    for j in range(int(col)):
         thetas[j][0] = tmp[j][0]
-        j += 1
 
 def train_thetas(thetas, tmp, col, row, X_train, Y_train, X_test, Y_test):
     test_cost = []
     train_cost = []
     tmp_iter = []
-    i = 0
-    #while (res >= cost_fct(thetas, X_test, Y_test, col, math.floor(row * 0.15))):
-    while (i < 50000):
+    for i in range(10000):
         gradient_descent(thetas, tmp, X_train, Y_train, math.floor(row * 0.70), col)
-        #res_train = cost_fct(thetas, X_train, Y_train, col, math.floor(row * 0.70))
-      #  train_cost.append(res_train)
         res = cost_fct(thetas, X_test, Y_test, col, math.floor(row * 0.15))
-#        test_cost.append(res)
- #       tmp_iter.append(i)
-        i += 1
-    #plt.plot(tmp_iter, train_cost)
-    #plt.plot(tmp_iter, test_cost)
-    #plt.show()
+        res_train = cost_fct(thetas, X_train, Y_train, col, math.floor(row * 0.70))
+        train_cost.append(res_train)
+        test_cost.append(res)
+        tmp_iter.append(i)
+    plt.plot(tmp_iter, train_cost)
+    plt.plot(tmp_iter, test_cost)
+    plt.show()
+
+def get_metrics_classifieur(thetas, X_validation, Y_validation):
+    
 
 def main():
     data, X, Y, X_scale = read_file()
@@ -118,14 +110,10 @@ def main():
     thetas = np.zeros((col, 1), dtype=float)
     tmp_the = np.zeros((col, 1), dtype=float)
     scale_mat(X_scale, row, col)
-    X_train, X_costfct, X_try = split_array(X_scale, row)
-    Y_train, Y_costfct, Y_try = split_array(Y, row)
-    train_thetas(thetas, tmp_the, col, row, X_train, Y_train, X_costfct, Y_costfct)
-    i = 0
-    while (i < (math.floor(row * 0.15))):
-        print("\n\n", Y_try[i], "\n\n")
-        print(hypo(X_try, i, thetas))
-        i += 1
+    X_train, X_test, X_validation = split_array(X_scale, row)
+    Y_train, Y_test, Y_validation = split_array(Y, row)
+    train_thetas(thetas, tmp_the, col, row, X_train, Y_train, X_test, Y_test)
+    get_metrics_classifieur(thetas, X_validation, Y_validation)
 
 if __name__ == "__main__":
     main()
