@@ -6,7 +6,7 @@
 #    By: msukhare <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/06/04 09:03:39 by msukhare          #+#    #+#              #
-#    Updated: 2018/10/17 16:00:37 by msukhare         ###   ########.fr        #
+#    Updated: 2018/10/19 14:32:39 by msukhare         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,7 @@ import numpy as np
 import csv
 import math
 import matplotlib.pyplot as plt
+from metrics_for_binary_classification import metrics_for_binary_classification
 
 def read_file():
     try:
@@ -23,7 +24,7 @@ def read_file():
     except:
         sys.exit("file doesn't exit")
     data.insert(0, '0', 1)
-    tmp_data = data.sample(frac=1)
+    tmp_data = data.sample(frac=1, random_state=3)
     col = tmp_data.shape[1]
     X = tmp_data.iloc[:, 0 : col - 1]
     Y = tmp_data.iloc[:, col - 1 :]
@@ -89,7 +90,7 @@ def train_thetas(thetas, tmp, col, row, X_train, Y_train, X_test, Y_test):
     test_cost = []
     train_cost = []
     tmp_iter = []
-    for i in range(10000):
+    for i in range(5250):
         gradient_descent(thetas, tmp, X_train, Y_train, math.floor(row * 0.70), col)
         res = cost_fct(thetas, X_test, Y_test, col, math.floor(row * 0.15))
         res_train = cost_fct(thetas, X_train, Y_train, col, math.floor(row * 0.70))
@@ -100,10 +101,27 @@ def train_thetas(thetas, tmp, col, row, X_train, Y_train, X_test, Y_test):
     plt.plot(tmp_iter, test_cost)
     plt.show()
 
-def get_metrics_classifieur(thetas, X_validation, Y_validation):
-    
+def get_pred_Y(X, thetas, Y):
+    pred_Y = np.zeros((X.shape[0], 1), dtype=float)
+    for i in range(int(X.shape[0])):
+        pred_Y[i][0] = hypo(X, i, thetas)
+        print("Y=", Y[i][0], "pred_Y=", pred_Y[i][0])
+    return (pred_Y)
+
+def write_thetas_in_file(thetas):
+    try:
+        new_file = csv.writer(open("thetas", "w"))
+    except:
+        sys.exit("fail to create file")
+    for i in range(int(thetas.shape[0])):
+        new_file.writerow([str(thetas[i][0])])
+
+def check_argv():
+    if (len(sys.argv) != 2):
+        sys.exit("usage: python3 [fileWithData.csv]")
 
 def main():
+    check_argv()
     data, X, Y, X_scale = read_file()
     row = X.shape[0]
     col = X.shape[1]
@@ -113,7 +131,9 @@ def main():
     X_train, X_test, X_validation = split_array(X_scale, row)
     Y_train, Y_test, Y_validation = split_array(Y, row)
     train_thetas(thetas, tmp_the, col, row, X_train, Y_train, X_test, Y_test)
-    get_metrics_classifieur(thetas, X_validation, Y_validation)
+    get_metrics = metrics_for_binary_classification()
+    get_metrics.confused_matrix_sigmoid(get_pred_Y(X_validation, thetas, Y_validation), Y_validation, 1)
+    write_thetas_in_file(thetas)
 
 if __name__ == "__main__":
     main()
