@@ -6,7 +6,7 @@
 #    By: msukhare <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/06/04 09:03:39 by msukhare          #+#    #+#              #
-#    Updated: 2018/10/19 14:32:39 by msukhare         ###   ########.fr        #
+#    Updated: 2018/11/08 13:14:41 by msukhare         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,10 +28,9 @@ def read_file():
     col = tmp_data.shape[1]
     X = tmp_data.iloc[:, 0 : col - 1]
     Y = tmp_data.iloc[:, col - 1 :]
-    X_scale = np.array(X.values, dtype=float)
     X = np.array(X.values, dtype=float)
     Y = np.array(Y.values, dtype=float)
-    return (tmp_data, X, Y, X_scale)
+    return (tmp_data, X, Y)
 
 def get_max_min(tab, j, row, max_min):
     to_ret = tab[0][j]
@@ -51,14 +50,14 @@ def scale_mat(tab, row, col):
         max_val = get_max_min(tab, j, row, 1)
         min_val = get_max_min(tab, j, row, 0)
         while (i < row):
-            tab[i][j] = tab[i][j] / (max_val - min_val)
+            tab[i][j] = (tab[i][j] - min_val) / (max_val - min_val)
             i += 1
         j += 1
 
 def split_array(tab, row):
-    to_ret_train = tab[0 : math.floor(row * 0.70), :]
-    to_ret_costfct = tab[math.floor(row * 0.70) : (math.floor(row * 0.70) + math.floor(row * 0.15)), :]
-    to_ret_try = tab[(math.floor(row * 0.70) + math.floor(row * 0.15)) : row, :]
+    to_ret_train = tab[0 : math.floor(row * 0.70)]
+    to_ret_costfct = tab[math.floor(row * 0.70) : math.floor(row * 0.85)]
+    to_ret_try = tab[math.floor(row * 0.85): ]
     return (to_ret_train, to_ret_costfct, to_ret_try)
 
 def hypo(tab, i, thetas):
@@ -90,7 +89,7 @@ def train_thetas(thetas, tmp, col, row, X_train, Y_train, X_test, Y_test):
     test_cost = []
     train_cost = []
     tmp_iter = []
-    for i in range(5250):
+    for i in range(10000):
         gradient_descent(thetas, tmp, X_train, Y_train, math.floor(row * 0.70), col)
         res = cost_fct(thetas, X_test, Y_test, col, math.floor(row * 0.15))
         res_train = cost_fct(thetas, X_train, Y_train, col, math.floor(row * 0.70))
@@ -110,7 +109,7 @@ def get_pred_Y(X, thetas, Y):
 
 def write_thetas_in_file(thetas):
     try:
-        new_file = csv.writer(open("thetas", "w"))
+        new_file = csv.writer(open("thetas.csv", "w"))
     except:
         sys.exit("fail to create file")
     for i in range(int(thetas.shape[0])):
@@ -122,13 +121,13 @@ def check_argv():
 
 def main():
     check_argv()
-    data, X, Y, X_scale = read_file()
+    data, X, Y = read_file()
     row = X.shape[0]
     col = X.shape[1]
     thetas = np.zeros((col, 1), dtype=float)
     tmp_the = np.zeros((col, 1), dtype=float)
-    scale_mat(X_scale, row, col)
-    X_train, X_test, X_validation = split_array(X_scale, row)
+    scale_mat(X, row, col)
+    X_train, X_test, X_validation = split_array(X, row)
     Y_train, Y_test, Y_validation = split_array(Y, row)
     train_thetas(thetas, tmp_the, col, row, X_train, Y_train, X_test, Y_test)
     get_metrics = metrics_for_binary_classification()

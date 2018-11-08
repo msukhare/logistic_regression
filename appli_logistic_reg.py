@@ -6,7 +6,7 @@
 #    By: msukhare <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/10/18 10:10:30 by msukhare          #+#    #+#              #
-#    Updated: 2018/10/18 15:03:11 by msukhare         ###   ########.fr        #
+#    Updated: 2018/11/08 09:12:54 by msukhare         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,7 +43,7 @@ def read_file():
     except:
         sys.exit("file doesn't exist")
     try:
-        thetas = pd.read_csv("thetas", header=None)
+        thetas = pd.read_csv("thetas.csv", header=None)
     except:
         sys.exit("file doesn't exist, use logistic_reg.py to create")
     X.insert(0, None, 1)
