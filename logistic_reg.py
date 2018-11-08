@@ -6,7 +6,7 @@
 #    By: msukhare <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/06/04 09:03:39 by msukhare          #+#    #+#              #
-#    Updated: 2018/11/08 13:14:41 by msukhare         ###   ########.fr        #
+#    Updated: 2018/11/08 13:55:41 by msukhare         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -89,7 +89,7 @@ def train_thetas(thetas, tmp, col, row, X_train, Y_train, X_test, Y_test):
     test_cost = []
     train_cost = []
     tmp_iter = []
-    for i in range(10000):
+    for i in range(5500):
         gradient_descent(thetas, tmp, X_train, Y_train, math.floor(row * 0.70), col)
         res = cost_fct(thetas, X_test, Y_test, col, math.floor(row * 0.15))
         res_train = cost_fct(thetas, X_train, Y_train, col, math.floor(row * 0.70))
