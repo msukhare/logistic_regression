@@ -16,7 +16,7 @@
 
 * I use [cross entropy](https://en.wikipedia.org/wiki/Cross_entropy) as cost function.
 
-* `losistic_reg.py` use [sigmoid](https://en.wikipedia.org/wiki/Sigmoid_function) as hypothesis.
+* `logistic_reg.py` use [sigmoid](https://en.wikipedia.org/wiki/Sigmoid_function) as hypothesis.
 
 ### About `appli_logistic_reg.py`:
 
