@@ -16,6 +16,8 @@
 
 * I use [cross entropy](https://en.wikipedia.org/wiki/Cross_entropy) as cost function.
 
+* `losistic_reg.py` use [sigmoid](https://en.wikipedia.org/wiki/Sigmoid_function) as hypothesis.
+
 ### About `appli_logistic_reg.py`:
 
 * `appli_logistic_reg.py` use trained thetas to predict class acording to the new features passed in parameters.
